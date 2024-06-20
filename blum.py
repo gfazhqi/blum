@@ -146,13 +146,14 @@ def get_new_token(query_id):
         print(f"\r{Fore.YELLOW+Style.BRIGHT}Mendapatkan token...", end="", flush=True)
         response = requests.post(url, headers=headers, data=data)
         if response.status_code == 200:
-            print(f"\r{Fore.GREEN+Style.BRIGHT}Token berhasil dibuat", end="", flush=True)
-            response_json = response.json()
-            return response_json['token']['refresh']
+            try:
+                response_json = response.json()
+                print(f"\r{Fore.GREEN+Style.BRIGHT}Token berhasil dibuat", end="", flush=True)
+                return response_json['token']['refresh']
+            except json.JSONDecodeError:
+                print(f"\r{Fore.RED+Style.BRIGHT}Gagal mendapatkan token, respons tidak valid.", flush=True)
         else:
-            print(response.json())
-            print(f"\r{Fore.RED+Style.BRIGHT}Gagal mendapatkan token, percobaan {attempt + 1}", flush=True)
-    # Jika semua percobaan gagal
+            print(f"\r{Fore.RED+Style.BRIGHT}Gagal mendapatkan token, status kode: {response.status_code}", flush=True)
 
     print(f"\r{Fore.RED+Style.BRIGHT}Gagal mendapatkan token setelah 3 percobaan.", flush=True)
     return None
@@ -615,5 +616,4 @@ while True:
         sys.stdout.flush()
         time.sleep(1)
     sys.stdout.write("\rWaktu claim berikutnya telah tiba!                                                          \n")
-
 
